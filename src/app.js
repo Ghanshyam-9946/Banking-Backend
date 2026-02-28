@@ -7,14 +7,15 @@ const transactionRouter = require('./routes/transaction.routes');
 const { sendRegistrationEmail } = require('./services/email.service');
 const app = express();
 
-app.get('/send', async  (req, res) => {
-    await sendRegistrationEmail("ddhote780@gmail.com", "bhai", "hdfghdf")
-    res.send("Hello World");
-})
+
 
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.get("/", (req, res) => {
+    res.send("Welcome to the Banking API");
+})
 
 app.use('/api/auth', authRouter);
 app.use('/api/accounts', accountRouter);
