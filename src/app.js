@@ -38,11 +38,28 @@ app.use('/api/accounts', accountRouter);
 app.use('/api/transactions', transactionRouter);
 
 app.get("/test-email", async (req, res) => {
-  await emailService.sendRegistrationEmail(
-    "dhoteghanshyam9@gmail.com",
-    "Test User"
-  );
-  res.send("Email triggered");
+
+  console.log("Route hit");
+
+  try {
+
+    await emailService.sendRegistrationEmail(
+      "dhoteghanshyam9@gmail.com",
+      "Ghanshyam"
+    );
+
+    console.log("Email function executed");
+
+    res.send("Email triggered");
+
+  } catch (err) {
+
+    console.log("Email error:", err);
+
+    res.send("Error sending email");
+
+  }
+
 });
 
 module.exports = app;
