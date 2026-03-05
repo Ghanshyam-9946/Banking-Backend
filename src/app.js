@@ -37,5 +37,12 @@ app.use('/api/auth', authRouter);
 app.use('/api/accounts', accountRouter);
 app.use('/api/transactions', transactionRouter);
 
+app.get("/test-email", async (req, res) => {
+  await emailService.sendRegistrationEmail(
+    "dhoteghanshyam9@gmail.com",
+    "Test User"
+  );
+  res.send("Email triggered");
+});
 
 module.exports = app;
