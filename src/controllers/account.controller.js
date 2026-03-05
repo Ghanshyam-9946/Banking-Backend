@@ -34,9 +34,20 @@ async function getUserAccountsController(req, res) {
             user: req.user._id
         });
 
+        const accountsWithBalance = await Promise.all(
+            accounts.map(async (account) => {
+                const balance = await account.getBalance();
+
+                return {
+                    ...account.toObject(),
+                    balance
+                };
+            })
+        );
+
         return res.status(200).json({
-            totalAccounts: accounts.length,
-            accounts
+            totalAccounts: accountsWithBalance.length,
+            accounts: accountsWithBalance
         });
 
     } catch (err) {
