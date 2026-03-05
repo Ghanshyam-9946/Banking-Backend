@@ -1,79 +1,62 @@
 require("dotenv").config();
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  requireTLS: true,
-
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-
-  // ⏱ Timeout settings
-  connectionTimeout: 20000,
-  greetingTimeout: 20000,
-  socketTimeout: 20000
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 
-// SMTP connection verify
-transporter.verify(function (error, success) {
-  if (error) {
-    console.log("SMTP Error:", error);
-  } else {
-    console.log("SMTP Server is ready to send emails");
-  }
-});
+// Generic email sender
+async function sendEmail(to, subject, html) {
 
+  console.log("Sending email to:", to);
 
-async function sendEmail(to, subject, text, html) {
   try {
 
-    const info = await transporter.sendMail({
-      from: `"Backend-Ledger" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      text,
-      html
+    const response = await resend.emails.send({
+      from: "Backend Ledger <onboarding@resend.dev>",
+      to: to,
+      subject: subject,
+      html: html
     });
 
-    console.log("Message sent:", info.messageId);
+    console.log("Email sent:", response);
 
   } catch (error) {
 
-    console.log("Email send error:", error);
+    console.log("Email error:", error);
 
   }
+
 }
 
 
+// Registration Email
 async function sendRegistrationEmail(userEmail, name) {
 
   const subject = "Welcome to Backend-Ledger";
 
-  const text = `Hi ${name}, Welcome to Backend-Ledger`;
+  const html = `
+  <h2>Hello ${name} 👋</h2>
+  <p>Welcome to <b>Backend Ledger</b>.</p>
+  <p>Your account has been created successfully.</p>
+  `;
 
-  const html = `<h2>Hello ${name}</h2>
-  <p>Welcome to Backend-Ledger</p>`;
-
-  await sendEmail(userEmail, subject, text, html);
+  await sendEmail(userEmail, subject, html);
 
 }
 
 
+// Transaction Success Email
 async function sendTransactionEmail(userEmail, name, amount, toAccount) {
 
   const subject = "Transaction Successful";
 
-  const text = `Hi ${name}, your transaction of ₹${amount} to account ${toAccount} was successful`;
+  const html = `
+  <h2>Transaction Successful 💸</h2>
+  <p>Hello ${name}</p>
+  <p>Your transaction of <b>₹${amount}</b> to account <b>${toAccount}</b> was successful.</p>
+  `;
 
-  const html = `<p>Hello ${name}</p>
-  <p>Your transaction of ₹${amount} to account ${toAccount} was successful</p>`;
-
-  await sendEmail(userEmail, subject, text, html);
+  await sendEmail(userEmail, subject, html);
 
 }
 
